@@ -7,6 +7,14 @@ import (
 	"os"
 )
 
+func check(err error, message string, returnCode int) {
+	if err != nil {
+		error.Println(message)
+		error.Println(err)
+		os.Exit(returnCode)
+	}
+}
+
 func main() {
 	cmdline := parseSettings()
 	var debugPipe io.Writer
@@ -20,5 +28,11 @@ func main() {
 	if !cmdline.useDefaults && cmdline.configFilePath == "" {
 		error.Println("No -builtin-defaults set nor config path given!")
 		os.Exit(1)
+	}
+	var err error
+	if cmdline.configFilePath != "" {
+		var f io.Reader
+		f, err = os.Open(cmdline.configFilePath)
+		check(err, "Could not open config file", 2)
 	}
 }
