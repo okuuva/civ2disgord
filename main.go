@@ -29,10 +29,13 @@ func main() {
 		error.Println("No -builtin-defaults set nor config path given!")
 		os.Exit(1)
 	}
+	var config *config
 	var err error
 	if cmdline.configFilePath != "" {
 		var f io.Reader
 		f, err = os.Open(cmdline.configFilePath)
 		check(err, "Could not open config file", 2)
+		config, err = parseConfig(&f)
+		check(err, "Could not parse config file", 3)
 	}
 }
