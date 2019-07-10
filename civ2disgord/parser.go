@@ -1,4 +1,5 @@
-package main
+// Package civ2disgord makes Civ 6 Play by Cloud notifications and Discord play ball
+package civ2disgord
 
 import (
 	"io"
