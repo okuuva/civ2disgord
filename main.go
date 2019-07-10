@@ -7,13 +7,9 @@ import (
 	"os"
 )
 
-func check(err error, message string, returnCode int) {
-	if err != nil {
-		error.Println(message)
-		error.Println(err)
-		os.Exit(returnCode)
-	}
-}
+const (
+	usage = "Halp"
+)
 
 func main() {
 	cmdline := parseSettings()
@@ -23,19 +19,15 @@ func main() {
 	} else {
 		debugPipe = ioutil.Discard
 	}
-	initLoggers(debugPipe, os.Stdout, os.Stdout, os.Stderr)
+	logger := newLogger(debugPipe, os.Stdout, os.Stderr)
 
-	if !cmdline.useDefaults && cmdline.configFilePath == "" {
-		error.Println("No -builtin-defaults set nor config path given!")
-		os.Exit(1)
-	}
 	var config *config
 	var err error
 	if cmdline.configFilePath != "" {
 		var f io.Reader
 		f, err = os.Open(cmdline.configFilePath)
-		check(err, "Could not open config file", 2)
+		logger.checkFatal(err, "Could not open config file", 1)
 		config, err = parseConfig(&f)
-		check(err, "Could not parse config file", 3)
+		logger.checkFatal(err, "Could not parse config file", 2)
 	}
 }

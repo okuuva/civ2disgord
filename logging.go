@@ -3,36 +3,48 @@
 package main
 
 import (
-	"log"
 	"io"
+	"log"
+	"os"
 )
 
-var (
-    debug   *log.Logger
-    info    *log.Logger
-    warning *log.Logger
-    error   *log.Logger
-)
+type logger struct {
+	debug   *log.Logger
+	info    *log.Logger
+	warning *log.Logger
+	error   *log.Logger
+}
 
-func initLoggers(
-    debugHandle io.Writer,
-    infoHandle io.Writer,
-    warningHandle io.Writer,
-    errorHandle io.Writer) {
+func (l logger) checkFatal(err error, message string, returnCode int) {
+	if err != nil {
+		l.error.Println(message)
+		l.info.Println(usage)
+		l.error.Println(err)
+		os.Exit(returnCode)
+	}
+}
 
-    debug = log.New(debugHandle,
-        "DEBUG: ",
-        log.Ldate|log.Ltime|log.Lshortfile)
+func newLogger(
+	debugHandle io.Writer,
+	stdHandle io.Writer,
+	errorHandle io.Writer) *logger {
 
-    info = log.New(infoHandle,
-        "INFO: ",
-        log.Ldate|log.Ltime|log.Lshortfile)
+	var l logger
+	l.debug = log.New(debugHandle,
+		"DEBUG: ",
+		log.Ldate|log.Ltime|log.Lshortfile)
 
-    warning = log.New(warningHandle,
-        "WARNING: ",
-        log.Ldate|log.Ltime|log.Lshortfile)
+	l.info = log.New(stdHandle,
+		"INFO: ",
+		log.Ldate|log.Ltime|log.Lshortfile)
 
-    error = log.New(errorHandle,
-        "ERROR: ",
-        log.Ldate|log.Ltime|log.Lshortfile)
+	l.warning = log.New(stdHandle,
+		"WARNING: ",
+		log.Ldate|log.Ltime|log.Lshortfile)
+
+	l.error = log.New(errorHandle,
+		"ERROR: ",
+		log.Ldate|log.Ltime|log.Lshortfile)
+
+	return &l
 }
