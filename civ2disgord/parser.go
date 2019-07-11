@@ -8,36 +8,41 @@ import (
 )
 
 // I really do not want to know how the actual game code looks like when the API has this kind of variable naming...
-type civ6message struct {
+type Civ6Message struct {
 	Value1 string // Player name
 	Value2 string // Game name
 	Value3 string // Turn number
 }
 
 // Add sane naming for entries without a need for a type conversion
-func (c civ6message) Player() string     { return c.Value1 }
-func (c civ6message) Game() string       { return c.Value2 }
-func (c civ6message) TurnNumber() string { return c.Value3 }
+func (civMessage *Civ6Message) Player() string     { return civMessage.Value1 }
+func (civMessage *Civ6Message) Game() string       { return civMessage.Value2 }
+func (civMessage *Civ6Message) TurnNumber() string { return civMessage.Value3 }
 
-type config struct {
+}
+
+func ParseMessage(messageBody io.Reader) (*Civ6Message, error) {
+	// Since yaml is superset of json, we can decode it with yaml decoder
+	// Just use strict decoder that handles the few corners between the two
+	decoder := yaml.NewDecoder(messageBody)
+	decoder.SetStrict(true)
+	var message Civ6Message
+	err := decoder.Decode(&message)
+	return &message, err
+}
+
+type DiscordConfig struct {
 	Players      map[string]string
 	Webhooks     map[string]string
 	DebugWebhook string
 }
 
-func parseMessage(messageBody *io.Reader) (*civ6message, error) {
-	// Since yaml is superset of json, we can decode it with yaml decoder
-	// Just use strict decoder that handles the few corners between the two
-	decoder := yaml.NewDecoder(*messageBody)
-	decoder.SetStrict(true)
-	var message civ6message
-	err := decoder.Decode(&message)
-	return &message, err
-}
+func (config *DiscordConfig) DiscordID(player string) string {return config.Players[player]}
+func (config *DiscordConfig) Webhook(game string) string {return config.Webhooks[game]}
 
-func parseConfig(configFile *io.Reader) (*config, error) {
+func ParseConfig(configFile *io.Reader) (*DiscordConfig, error) {
 	decoder := yaml.NewDecoder(*configFile)
-	var config config
+	var config DiscordConfig
 	err := decoder.Decode(&config)
 	return &config, err
 }
