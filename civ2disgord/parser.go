@@ -2,8 +2,11 @@
 package civ2disgord
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 
 	"gopkg.in/yaml.v2"
 )
@@ -60,6 +63,23 @@ func ParseMessage(messageBody io.Reader) (*Civ6Message, error) {
 type DiscordMessage struct {
 	Content  string
 	webhooks []string
+}
+
+func (discordMessage *DiscordMessage) SendMessage() (responses []*http.Response, errs []error) {
+	for _, webhook := range discordMessage.webhooks {
+		resp, err := discordMessage.sendMessageTo(webhook)
+		responses = append(responses, resp)
+		errs = append(errs, err)
+	}
+	return responses, errs
+}
+
+func (discordMessage *DiscordMessage) sendMessageTo(url string) (*http.Response, error) {
+	jsonValue, err := json.Marshal(discordMessage)
+	if err != nil {
+		return nil, err
+	}
+	return http.Post(url, "application/json", bytes.NewBuffer(jsonValue))
 }
 
 func NewDefaultDiscordMessage(player, game, turn string, webhooks *[]string) *DiscordMessage {
