@@ -2,6 +2,7 @@
 package civ2disgord
 
 import (
+	"fmt"
 	"io"
 
 	"gopkg.in/yaml.v2"
@@ -19,6 +20,31 @@ func (civMessage *Civ6Message) Player() string     { return civMessage.Value1 }
 func (civMessage *Civ6Message) Game() string       { return civMessage.Value2 }
 func (civMessage *Civ6Message) TurnNumber() string { return civMessage.Value3 }
 
+func (civMessage *Civ6Message) NewDefaultDiscordMessage(config *DiscordConfig, requireDiscordID bool) (*DiscordMessage, error) {
+	player := civMessage.Player()
+	game := civMessage.Game()
+	turn := civMessage.TurnNumber()
+	discordID := config.DiscordID(player)
+	if discordID == "" {
+		if requireDiscordID {
+			return nil, fmt.Errorf("Could not find DiscordID for player %s", player)
+		}
+		discordID = player
+	}
+	var webhooks []string
+	webhook := config.DebugWebhook
+	if webhook != "" {
+		webhooks = append(webhooks, webhook)
+	}
+	webhook = config.Webhook(game)
+	var err error
+	if webhook == "" {
+		err = fmt.Errorf("Could not find webhook for game %s", game)
+	} else {
+		webhooks = append(webhooks, webhook)
+	}
+	discordMessage := NewDefaultDiscordMessage(discordID, game, turn, &webhooks)
+	return discordMessage, err
 }
 
 func ParseMessage(messageBody io.Reader) (*Civ6Message, error) {
@@ -29,6 +55,18 @@ func ParseMessage(messageBody io.Reader) (*Civ6Message, error) {
 	var message Civ6Message
 	err := decoder.Decode(&message)
 	return &message, err
+}
+
+type DiscordMessage struct {
+	Content  string
+	webhooks []string
+}
+
+func NewDefaultDiscordMessage(player, game, turn string, webhooks *[]string) *DiscordMessage {
+	var discordMessage DiscordMessage
+	discordMessage.Content = fmt.Sprintf("Hey <@%s>, it's time to take your turn #%s in '%s'!", player, game, turn)
+	discordMessage.webhooks = webhooks
+	return &discordMessage
 }
 
 type DiscordConfig struct {
