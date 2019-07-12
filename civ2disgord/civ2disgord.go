@@ -19,8 +19,8 @@ type Civ6Message struct {
 }
 
 // Add sane naming for entries without a need for a type conversion
-func (civMessage *Civ6Message) Player() string     { return civMessage.Value1 }
-func (civMessage *Civ6Message) Game() string       { return civMessage.Value2 }
+func (civMessage *Civ6Message) Game() string       { return civMessage.Value1 }
+func (civMessage *Civ6Message) Player() string     { return civMessage.Value2 }
 func (civMessage *Civ6Message) TurnNumber() string { return civMessage.Value3 }
 
 func (civMessage *Civ6Message) NewDefaultDiscordMessage(config *DiscordConfig, requireDiscordID bool) (*DiscordMessage, error) {
