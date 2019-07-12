@@ -11,6 +11,7 @@ type settings struct {
 	debug          bool
 	useDefaults    bool
 	configFilePath string
+	messages       []string
 }
 
 func parseSettings() (cmdline settings) {
@@ -18,5 +19,6 @@ func parseSettings() (cmdline settings) {
 	flag.BoolVar(&cmdline.useDefaults, "builtin-defaults", false, "Use builtin default mapping values")
 	flag.StringVar(&cmdline.configFilePath, "config", "", "Path to configuration yaml")
 	flag.Parse()
+	cmdline.messages = flag.Args()
 	return cmdline
 }
