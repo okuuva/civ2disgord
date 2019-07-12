@@ -30,7 +30,7 @@ func (civMessage *Civ6Message) NewDefaultDiscordMessage(config *DiscordConfig, r
 	discordID := config.DiscordID(player)
 	if discordID == "" {
 		if requireDiscordID {
-			return nil, fmt.Errorf("Could not find DiscordID for player %s", player)
+			return nil, fmt.Errorf("could not find DiscordID for player %s", player)
 		}
 		discordID = player
 	}
@@ -42,7 +42,7 @@ func (civMessage *Civ6Message) NewDefaultDiscordMessage(config *DiscordConfig, r
 	webhook = config.Webhook(game)
 	var err error
 	if webhook == "" {
-		err = fmt.Errorf("Could not find webhook for game %s", game)
+		err = fmt.Errorf("could not find webhook for game %s", game)
 	} else {
 		webhooks = append(webhooks, webhook)
 	}
