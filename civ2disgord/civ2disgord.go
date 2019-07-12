@@ -84,7 +84,7 @@ func (discordMessage *DiscordMessage) sendMessageTo(url string) (*http.Response,
 
 func NewDefaultDiscordMessage(player, game, turn string, webhooks []string) *DiscordMessage {
 	var discordMessage DiscordMessage
-	discordMessage.Content = fmt.Sprintf("Hey <@%s>, it's time to take your turn #%s in '%s'!", player, game, turn)
+	discordMessage.Content = fmt.Sprintf("Hey <@%s>, it's time to take your turn #%s in '%s'!", player, turn, game)
 	discordMessage.webhooks = webhooks
 	return &discordMessage
 }
