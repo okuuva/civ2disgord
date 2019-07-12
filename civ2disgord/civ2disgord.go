@@ -61,7 +61,7 @@ func ParseMessage(messageBody io.Reader) (*Civ6Message, error) {
 }
 
 type DiscordMessage struct {
-	Content  string
+	Content  string		`json:"content"`
 	webhooks []string
 }
 
@@ -75,11 +75,11 @@ func (discordMessage *DiscordMessage) SendMessage() (responses []*http.Response,
 }
 
 func (discordMessage *DiscordMessage) sendMessageTo(url string) (*http.Response, error) {
-	jsonValue, err := json.Marshal(discordMessage)
+	payload, err := json.Marshal(discordMessage)
 	if err != nil {
 		return nil, err
 	}
-	return http.Post(url, "application/json", bytes.NewBuffer(jsonValue))
+	return http.Post(url, "application/json; charset=utf-8", bytes.NewBuffer(payload))
 }
 
 func NewDefaultDiscordMessage(player, game, turn string, webhooks []string) *DiscordMessage {
