@@ -16,7 +16,7 @@ type settings struct {
 
 func parseSettings() (cmdline settings) {
 	flag.BoolVar(&cmdline.debug, "debug", false, "Debug output")
-	flag.BoolVar(&cmdline.useDefaults, "builtin-defaults", false, "Use builtin default mapping values")
+	flag.BoolVar(&cmdline.useDefaults, "use-defaults", false, "Use builtin default Discord config")
 	flag.StringVar(&cmdline.configFilePath, "config", "", "Path to configuration yaml")
 	flag.Parse()
 	cmdline.messages = flag.Args()
