@@ -98,9 +98,9 @@ type DiscordConfig struct {
 func (config *DiscordConfig) DiscordID(player string) string {return config.Players[player]}
 func (config *DiscordConfig) Webhook(game string) string {return config.Webhooks[game]}
 
-func ParseConfig(configFile *io.Reader) (*DiscordConfig, error) {
+func ParseConfig(configFile *io.Reader) (DiscordConfig, error) {
 	decoder := yaml.NewDecoder(*configFile)
 	var config DiscordConfig
 	err := decoder.Decode(&config)
-	return &config, err
+	return config, err
 }
