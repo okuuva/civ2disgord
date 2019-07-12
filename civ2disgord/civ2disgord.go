@@ -46,7 +46,7 @@ func (civMessage *Civ6Message) NewDefaultDiscordMessage(config *DiscordConfig, r
 	} else {
 		webhooks = append(webhooks, webhook)
 	}
-	discordMessage := NewDefaultDiscordMessage(discordID, game, turn, &webhooks)
+	discordMessage := NewDefaultDiscordMessage(discordID, game, turn, webhooks)
 	return discordMessage, err
 }
 
@@ -82,7 +82,7 @@ func (discordMessage *DiscordMessage) sendMessageTo(url string) (*http.Response,
 	return http.Post(url, "application/json", bytes.NewBuffer(jsonValue))
 }
 
-func NewDefaultDiscordMessage(player, game, turn string, webhooks *[]string) *DiscordMessage {
+func NewDefaultDiscordMessage(player, game, turn string, webhooks []string) *DiscordMessage {
 	var discordMessage DiscordMessage
 	discordMessage.Content = fmt.Sprintf("Hey <@%s>, it's time to take your turn #%s in '%s'!", player, game, turn)
 	discordMessage.webhooks = webhooks
