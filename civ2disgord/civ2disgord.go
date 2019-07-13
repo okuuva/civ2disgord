@@ -13,8 +13,8 @@ import (
 
 // I really do not want to know how the actual game code looks like when the API has this kind of variable naming...
 type Civ6Message struct {
-	Value1 string // Player name
-	Value2 string // Game name
+	Value1 string // Game name
+	Value2 string // Player name
 	Value3 string // Turn number
 }
 
