@@ -33,6 +33,15 @@ func checkResponses(responses []*http.Response, logger *logger) bool {
 	return success
 }
 
+func checkErrors(errs []error) error {
+	for _, err := range errs {
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func main() {
 	cmdline := parseSettings()
 	var debugPipe io.Writer
@@ -69,12 +78,9 @@ func main() {
 		logger.checkFatal(err, "Failed to construct DiscordMessage", 5)
 		responses, errs = discordMessage.SendMessage()
 	}
-	for _, err := range errs {
-		if err != nil {
-			logger.error.Println(err)
-			os.Exit(5)
-		}
-	}
+	err := checkErrors(errs)
+	if err != nil {
+		logger.checkFatal(err, "Failed to send message", 5)
 	}
 	if !checkResponses(responses, logger) {
 		os.Exit(5)
