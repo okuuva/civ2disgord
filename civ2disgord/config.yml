@@ -8,4 +8,4 @@ webhooks:
   RegularGaem: https://discordapp.com/webhook0
   SupaAwesomeGaem: https://discordapp.com/webhook1
 
-debugWebhook: https://when-all-goes-bonkers
+debug-webhook: https://when-all-goes-bonkers

@@ -90,9 +90,9 @@ func NewDefaultDiscordMessage(player, game, turn string, webhooks []string) *Dis
 }
 
 type DiscordConfig struct {
-	Players      map[string]string
-	Webhooks     map[string]string
-	DebugWebhook string
+	Players      map[string]string	`yaml:"players"`
+	Webhooks     map[string]string	`yaml:"webhooks"`
+	DebugWebhook string				`yaml:"debug-webhook"`
 }
 
 func (config *DiscordConfig) DiscordID(player string) string {return config.Players[player]}
