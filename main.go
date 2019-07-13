@@ -33,7 +33,7 @@ func main() {
 		var err error
 		f, err = os.Open(cmdline.configFilePath)
 		logger.checkFatal(err, "Could not open config file", 1)
-		config, err = civ2disgord.ParseConfig(&f)
+		config, err = civ2disgord.ParseConfig(f)
 		logger.checkFatal(err, "Could not parse config file", 1)
 	} else if cmdline.useDefaults {
 		err := copier.Copy(&config, &civ2disgord.DefaultDiscordConfig)
