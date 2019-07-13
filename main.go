@@ -17,6 +17,22 @@ const (
 	usage = "Halp"
 )
 
+func checkResponses(responses []*http.Response, logger *logger) bool {
+	success := true
+	for _, response := range responses {
+		logger.debug.Println(response)
+		logger.debug.Println(response.Request)
+		url := response.Request.URL.String()
+		if response.StatusCode != 204 {
+			logger.error.Printf("Failed to send message to %s!", url)
+			success = false
+		} else {
+			logger.info.Printf("Successfully sent meggase to %s", url)
+		}
+	}
+	return success
+}
+
 func main() {
 	cmdline := parseSettings()
 	var debugPipe io.Writer
@@ -59,19 +75,8 @@ func main() {
 			os.Exit(5)
 		}
 	}
-	var fail bool
-	for _, response := range responses {
-		logger.debug.Println(response)
-		logger.debug.Println(response.Request)
-		url := response.Request.URL.String()
-		if response.StatusCode != 204 {
-			logger.error.Printf("Failed to send message to %s!", url)
-			fail = true
-		} else {
-			logger.info.Printf("Successfully sent meggase to %s", url)
-		}
 	}
-	if fail {
+	if !checkResponses(responses, logger) {
 		os.Exit(5)
 	}
 }
