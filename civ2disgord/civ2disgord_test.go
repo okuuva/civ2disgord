@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/google/go-cmp/cmp"
 	"github.com/jinzhu/copier"
+	"github.com/joho/godotenv"
 	"os"
 	"strings"
 	"testing"
@@ -36,6 +37,14 @@ var referenceDiscordConfig = DiscordConfig {
 		"SupaAwesomeGaem": "https://discordapp.com/webhook1",
 	},
 	DebugWebhook: "https://when-all-goes-bonkers",
+}
+
+func loadEnv() {
+	godotenv.Load()
+}
+
+func unsetEnv(key string) {
+	os.Unsetenv(fmt.Sprintf("civ2disgord_%s", key))
 }
 
 func TestParseConfig(t *testing.T) {
@@ -186,6 +195,48 @@ func TestCiv6Message_NewDefaultDiscordMessageNoDiscordIDWhileRequired(t *testing
 	}
 	noMatchingDiscordID.Players = map[string]string{}
 	_, err = referenceCivMessage.NewDefaultDiscordMessage(&noMatchingDiscordID, true)
+	if err == nil {
+		t.Errorf("Generating message without matching DiscordID while requireDiscordID = true didn't fail!")
+	}
+}
+
+func TestCiv6Message_NewDefaultDiscordMessageFromEnv(t *testing.T) {
+	loadEnv()
+	discordMessage, err := referenceCivMessage.NewDefaultDiscordMessageFromEnv(true)
+	if err != nil {
+		t.Errorf("Failed to generate test Discord message")
+		t.Errorf("Error: %s", err)
+		return
+	}
+	if !cmp.Equal(&referenceDiscordMessage, discordMessage, cmp.AllowUnexported(DiscordMessage{})) {
+		t.Errorf("Generated message doesn't match the reference!")
+		t.Errorf("Reference: %+v", &referenceDiscordMessage)
+		t.Errorf("Parsed:    %+v", discordMessage)
+	}
+}
+
+func TestCiv6Message_NewDefaultDiscordMessageFromEnvNoWebhooks(t *testing.T) {
+	loadEnv()
+	unsetEnv("RegularGaem")
+	_, err := referenceCivMessage.NewDefaultDiscordMessageFromEnv(true)
+	if err == nil {
+		t.Errorf("Generating message from DiscordConfig without webhooks didn't return an error!")
+	}
+}
+
+func TestCiv6Message_NewDefaultDiscordMessageFromEnvNoDiscordID(t *testing.T) {
+	loadEnv()
+	unsetEnv("SteamNick2")
+	_, err := referenceCivMessage.NewDefaultDiscordMessageFromEnv(false)
+	if err != nil {
+		t.Errorf("Generating message without matching DiscordID while requireDiscordID = false failed!")
+	}
+}
+
+func TestCiv6Message_NewDefaultDiscordMessageFromEnvNoDiscordIDWhileRequired(t *testing.T) {
+	loadEnv()
+	unsetEnv("SteamNick2")
+	_, err := referenceCivMessage.NewDefaultDiscordMessageFromEnv(true)
 	if err == nil {
 		t.Errorf("Generating message without matching DiscordID while requireDiscordID = true didn't fail!")
 	}
