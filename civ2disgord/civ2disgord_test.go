@@ -148,7 +148,7 @@ func TestCiv6Message_NewDefaultDiscordMessage(t *testing.T) {
 
 func TestCiv6Message_NewDefaultDiscordMessageNoWebhooks(t *testing.T) {
 	noWebhooksConfig := DiscordConfig{}
-	err := copier.Copy(&referenceDiscordConfig, &noWebhooksConfig)
+	err := copier.Copy(&noWebhooksConfig, &referenceDiscordConfig)
 	if err != nil {
 		t.Errorf("Failed to copy referenceDiscordConfig!")
 		t.Errorf("Error: %s", err)
@@ -163,7 +163,7 @@ func TestCiv6Message_NewDefaultDiscordMessageNoWebhooks(t *testing.T) {
 
 func TestCiv6Message_NewDefaultDiscordMessageNoDiscordID(t *testing.T) {
 	noMatchingDiscordID := DiscordConfig{}
-	err := copier.Copy(&referenceDiscordConfig, &noMatchingDiscordID)
+	err := copier.Copy(&noMatchingDiscordID, &referenceDiscordConfig)
 	if err != nil {
 		t.Errorf("Failed to copy referenceDiscordConfig!")
 		t.Errorf("Error: %s", err)
@@ -178,7 +178,7 @@ func TestCiv6Message_NewDefaultDiscordMessageNoDiscordID(t *testing.T) {
 
 func TestCiv6Message_NewDefaultDiscordMessageNoDiscordIDWhileRequired(t *testing.T) {
 	noMatchingDiscordID := DiscordConfig{}
-	err := copier.Copy(&referenceDiscordConfig, &noMatchingDiscordID)
+	err := copier.Copy(&noMatchingDiscordID, &referenceDiscordConfig)
 	if err != nil {
 		t.Errorf("Failed to copy referenceDiscordConfig!")
 		t.Errorf("Error: %s", err)
