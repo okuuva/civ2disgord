@@ -18,7 +18,6 @@ type logger struct {
 func (l logger) checkFatal(err error, message string, returnCode int) {
 	if err != nil {
 		l.error.Println(message)
-		l.info.Println(usage)
 		l.error.Println(err)
 		os.Exit(returnCode)
 	}
