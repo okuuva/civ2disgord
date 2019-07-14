@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/joho/godotenv"
 	"github.com/okuuva/civ2disgord/civ2disgord"
 )
 
@@ -28,14 +29,19 @@ func main() {
 
 	var config civ2disgord.DiscordConfig
 	if cmdline.configFilePath != "" {
+		logger.debug.Printf("Reading config from %s", cmdline.configFilePath)
 		var f io.Reader
 		var err error
 		f, err = os.Open(cmdline.configFilePath)
 		logger.checkFatal(err, "Could not open config file", 1)
 		config, err = civ2disgord.ParseConfig(f)
 		logger.checkFatal(err, "Could not parse config file", 1)
+		logger.debug.Println("Successfully loaded config")
 	} else if cmdline.fromEnv {
 		logger.debug.Println("Reading mapping values from environment variables")
+		if err := godotenv.Load(); err != nil {
+			logger.debug.Println("Failed to load default environment variables from .env")
+		}
 	} else {
 		logger.checkFatal(errors.New("no config provided"), "No config provided", 3)
 	}
