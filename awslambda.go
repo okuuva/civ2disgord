@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/okuuva/civ2disgord/civ2disgord"
+	"io/ioutil"
+	"os"
 )
 
 func HandleRequest(civ6Message civ2disgord.Civ6Message) error {
@@ -11,8 +13,9 @@ func HandleRequest(civ6Message civ2disgord.Civ6Message) error {
 	if err != nil {
 		return err
 	}
+	logger := newLogger(ioutil.Discard, os.Stdout, os.Stderr)
 	responses, errs := discordMessage.SendMessage()
-	if !checkResponses(responses, nil) {
+	if !checkResponses(responses, logger) {
 		return fmt.Errorf("failed to send message")
 	}
 	err = checkErrors(errs)
