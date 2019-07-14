@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/okuuva/civ2disgord/civ2disgord"
-	"io/ioutil"
 	"os"
 )
 
 func HandleRequest(civ6Message civ2disgord.Civ6Message) error {
-	logger := newLogger(ioutil.Discard, os.Stdout, os.Stderr)
+	logger := newLogger(os.Stdout, os.Stdout, os.Stderr)
+	logger.debug.Printf("Received message: %+v", civ6Message)
 	discordMessage, err := civ6Message.NewDefaultDiscordMessage(&civ2disgord.DefaultDiscordConfig, false)
 	if err != nil {
 		return err
