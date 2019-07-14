@@ -12,7 +12,7 @@ func checkResponses(responses []*http.Response, logger *logger) bool {
 			logger.error.Printf("Failed to send message to %s!", url)
 			success = false
 		} else {
-			logger.info.Printf("Successfully sent meggase to %s", url)
+			logger.info.Printf("Successfully sent message to %s", url)
 		}
 	}
 	return success
