@@ -9,11 +9,11 @@ import (
 )
 
 func HandleRequest(civ6Message civ2disgord.Civ6Message) error {
+	logger := newLogger(ioutil.Discard, os.Stdout, os.Stderr)
 	discordMessage, err := civ6Message.NewDefaultDiscordMessage(&civ2disgord.DefaultDiscordConfig, false)
 	if err != nil {
 		return err
 	}
-	logger := newLogger(ioutil.Discard, os.Stdout, os.Stderr)
 	responses, errs := discordMessage.SendMessage()
 	if !checkResponses(responses, logger) {
 		return fmt.Errorf("failed to send message")
