@@ -26,6 +26,18 @@ var referenceDiscordMessage = DiscordMessage{
 	webhooks: testWebhooks,
 }
 
+var referenceDiscordConfig = DiscordConfig {
+	Players: map[string]string {
+		"SteamNick1": "13123discordIDhere123123",
+		"SteamNick2": "23123discordIDhere123123",
+	},
+	Webhooks: map[string]string {
+		"RegularGaem":     "https://discordapp.com/webhook0",
+		"SupaAwesomeGaem": "https://discordapp.com/webhook1",
+	},
+	DebugWebhook: "https://when-all-goes-bonkers",
+}
+
 func TestParseConfig(t *testing.T) {
 	testFilePath := "./config.yml"
 	f, err := os.Open(testFilePath)
@@ -40,15 +52,15 @@ func TestParseConfig(t *testing.T) {
 		t.Errorf("Error: %s", err)
 		return
 	}
-	if !cmp.Equal(config, DefaultDiscordConfig) {
+	if !cmp.Equal(config, referenceDiscordConfig) {
 		t.Errorf("Parsed config doesn't match the reference!")
-		t.Errorf("Reference: %+v", DefaultDiscordConfig)
+		t.Errorf("Reference: %+v", referenceDiscordConfig)
 		t.Errorf("Parsed:    %+v", config)
 	}
 }
 
 func TestDiscordConfig_DiscordID(t *testing.T) {
-	discordID := DefaultDiscordConfig.DiscordID("SteamNick2")
+	discordID := referenceDiscordConfig.DiscordID("SteamNick2")
 	expected := "23123discordIDhere123123"
 	if discordID != expected {
 		t.Errorf("Unexpected DiscordID")
@@ -58,7 +70,7 @@ func TestDiscordConfig_DiscordID(t *testing.T) {
 }
 
 func TestDiscordConfig_Webhook(t *testing.T) {
-	webhook := DefaultDiscordConfig.Webhook("RegularGaem")
+	webhook := referenceDiscordConfig.Webhook("RegularGaem")
 	expected := "https://discordapp.com/webhook0"
 	if webhook != expected {
 		t.Errorf("Unexpected webhook!")
@@ -121,7 +133,7 @@ func TestNewDefaultDiscordMessage(t *testing.T) {
 }
 
 func TestCiv6Message_NewDefaultDiscordMessage(t *testing.T) {
-	discordMessage, err := referenceCivMessage.NewDefaultDiscordMessage(&DefaultDiscordConfig, true)
+	discordMessage, err := referenceCivMessage.NewDefaultDiscordMessage(&referenceDiscordConfig, true)
 	if err != nil {
 		t.Errorf("Failed to generate test Discord message")
 		t.Errorf("Error: %s", err)
@@ -136,14 +148,14 @@ func TestCiv6Message_NewDefaultDiscordMessage(t *testing.T) {
 
 func TestCiv6Message_NewDefaultDiscordMessageNoWebhooks(t *testing.T) {
 	noWebhooksConfig := DiscordConfig{}
-	err := copier.Copy(&DefaultDiscordConfig, &noWebhooksConfig)
+	err := copier.Copy(&referenceDiscordConfig, &noWebhooksConfig)
 	if err != nil {
-		t.Errorf("Failed to copy DefaultDiscordConfig!")
+		t.Errorf("Failed to copy referenceDiscordConfig!")
 		t.Errorf("Error: %s", err)
 		return
 	}
 	noWebhooksConfig.Webhooks = map[string]string{}
-	_, err = referenceCivMessage.NewDefaultDiscordMessage(&DefaultDiscordConfig, true)
+	_, err = referenceCivMessage.NewDefaultDiscordMessage(&noWebhooksConfig, true)
 	if err == nil {
 		t.Errorf("Generating message from DiscordConfig without webhooks didn't return an error!")
 	}
@@ -151,14 +163,14 @@ func TestCiv6Message_NewDefaultDiscordMessageNoWebhooks(t *testing.T) {
 
 func TestCiv6Message_NewDefaultDiscordMessageNoDiscordID(t *testing.T) {
 	noMatchingDiscordID := DiscordConfig{}
-	err := copier.Copy(&DefaultDiscordConfig, &noMatchingDiscordID)
+	err := copier.Copy(&referenceDiscordConfig, &noMatchingDiscordID)
 	if err != nil {
-		t.Errorf("Failed to copy DefaultDiscordConfig!")
+		t.Errorf("Failed to copy referenceDiscordConfig!")
 		t.Errorf("Error: %s", err)
 		return
 	}
 	noMatchingDiscordID.Players = map[string]string{}
-	_, err = referenceCivMessage.NewDefaultDiscordMessage(&DefaultDiscordConfig, false)
+	_, err = referenceCivMessage.NewDefaultDiscordMessage(&noMatchingDiscordID, false)
 	if err != nil {
 		t.Errorf("Generating message without matching DiscordID while requireDiscordID = false failed!")
 	}
@@ -166,14 +178,14 @@ func TestCiv6Message_NewDefaultDiscordMessageNoDiscordID(t *testing.T) {
 
 func TestCiv6Message_NewDefaultDiscordMessageNoDiscordIDWhileRequired(t *testing.T) {
 	noMatchingDiscordID := DiscordConfig{}
-	err := copier.Copy(&DefaultDiscordConfig, &noMatchingDiscordID)
+	err := copier.Copy(&referenceDiscordConfig, &noMatchingDiscordID)
 	if err != nil {
-		t.Errorf("Failed to copy DefaultDiscordConfig!")
+		t.Errorf("Failed to copy referenceDiscordConfig!")
 		t.Errorf("Error: %s", err)
 		return
 	}
 	noMatchingDiscordID.Players = map[string]string{}
-	_, err = referenceCivMessage.NewDefaultDiscordMessage(&DefaultDiscordConfig, true)
+	_, err = referenceCivMessage.NewDefaultDiscordMessage(&noMatchingDiscordID, true)
 	if err == nil {
 		t.Errorf("Generating message without matching DiscordID while requireDiscordID = true didn't fail!")
 	}

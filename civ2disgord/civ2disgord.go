@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 
 	"gopkg.in/yaml.v2"
 )
@@ -41,6 +42,38 @@ func (civMessage *Civ6Message) NewDefaultDiscordMessage(config *DiscordConfig, r
 	}
 	webhook = config.Webhook(game)
 	var err error
+	if webhook == "" {
+		err = fmt.Errorf("could not find webhook for game %s", game)
+	} else {
+		webhooks = append(webhooks, webhook)
+	}
+	discordMessage := NewDefaultDiscordMessage(discordID, game, turn, webhooks)
+	return discordMessage, err
+}
+
+func (civMessage *Civ6Message) NewDefaultDiscordMessageFromEnv(requireDiscordID bool) (*DiscordMessage, error) {
+	player := civMessage.Player()
+	game := civMessage.Game()
+	turn := civMessage.TurnNumber()
+	discordID := os.Getenv(player)
+	if discordID == "" {
+		if requireDiscordID {
+			return nil, fmt.Errorf("could not find DiscordID for player %s", player)
+		}
+		discordID = player
+	}
+	debugWebhooks := []string{
+		os.Getenv("global-debug-webhook"),
+		os.Getenv(fmt.Sprintf("%s-debug", game)),
+	}
+	var webhooks []string
+	for _, webhook := range debugWebhooks {
+		if webhook != "" {
+			webhooks = append(webhooks, webhook)
+		}
+	}
+	var err error
+	webhook := os.Getenv(game)
 	if webhook == "" {
 		err = fmt.Errorf("could not find webhook for game %s", game)
 	} else {

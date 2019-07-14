@@ -8,15 +8,15 @@ import (
 )
 
 type settings struct {
-	debug          bool
-	useDefaults    bool
-	configFilePath string
-	messages       []string
+	debug			bool
+	fromEnv			bool
+	configFilePath	string
+	messages		[]string
 }
 
 func parseSettings() (cmdline settings) {
 	flag.BoolVar(&cmdline.debug, "debug", false, "Debug output")
-	flag.BoolVar(&cmdline.useDefaults, "use-defaults", false, "Use builtin default Discord config")
+	flag.BoolVar(&cmdline.fromEnv, "from-env", false, "Read mappings from environment variables")
 	flag.StringVar(&cmdline.configFilePath, "config", "", "Path to configuration yaml")
 	flag.Parse()
 	cmdline.messages = flag.Args()

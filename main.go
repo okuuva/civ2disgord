@@ -9,7 +9,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/jinzhu/copier"
 	"github.com/okuuva/civ2disgord/civ2disgord"
 )
 
@@ -35,9 +34,8 @@ func main() {
 		logger.checkFatal(err, "Could not open config file", 1)
 		config, err = civ2disgord.ParseConfig(f)
 		logger.checkFatal(err, "Could not parse config file", 1)
-	} else if cmdline.useDefaults {
-		err := copier.Copy(&config, &civ2disgord.DefaultDiscordConfig)
-		logger.checkFatal(err, "Failed to access default config", 2)
+	} else if cmdline.fromEnv {
+		logger.debug.Println("Reading mapping values from environment variables")
 	} else {
 		logger.checkFatal(errors.New("no config provided"), "No config provided", 3)
 	}
@@ -49,7 +47,12 @@ func main() {
 	for _, message := range cmdline.messages {
 		civMessage, err := civ2disgord.ParseMessage(strings.NewReader(message))
 		logger.checkFatal(err, "Failed to parse message", 4)
-		discordMessage, err := civMessage.NewDefaultDiscordMessage(&config, false)
+		var discordMessage *civ2disgord.DiscordMessage
+		if cmdline.fromEnv {
+			discordMessage, err = civMessage.NewDefaultDiscordMessageFromEnv(false)
+		} else {
+			discordMessage, err = civMessage.NewDefaultDiscordMessage(&config, false)
+		}
 		logger.checkFatal(err, "Failed to construct DiscordMessage", 5)
 		responses, errs = discordMessage.SendMessage()
 	}
