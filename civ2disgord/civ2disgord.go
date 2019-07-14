@@ -12,6 +12,10 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+func getEnv(key string) string {
+	return os.Getenv(fmt.Sprintf("civ2disgord_%s", key))
+}
+
 // I really do not want to know how the actual game code looks like when the API has this kind of variable naming...
 type Civ6Message struct {
 	Value1 string // Game name
@@ -55,7 +59,7 @@ func (civMessage *Civ6Message) NewDefaultDiscordMessageFromEnv(requireDiscordID 
 	player := civMessage.Player()
 	game := civMessage.Game()
 	turn := civMessage.TurnNumber()
-	discordID := os.Getenv(player)
+	discordID := getEnv(player)
 	if discordID == "" {
 		if requireDiscordID {
 			return nil, fmt.Errorf("could not find DiscordID for player %s", player)
@@ -63,8 +67,8 @@ func (civMessage *Civ6Message) NewDefaultDiscordMessageFromEnv(requireDiscordID 
 		discordID = player
 	}
 	debugWebhooks := []string{
-		os.Getenv("global-debug-webhook"),
-		os.Getenv(fmt.Sprintf("%s-debug", game)),
+		getEnv("global_debug_webhook"),
+		getEnv(fmt.Sprintf("%s_debug", game)),
 	}
 	var webhooks []string
 	for _, webhook := range debugWebhooks {
@@ -73,7 +77,7 @@ func (civMessage *Civ6Message) NewDefaultDiscordMessageFromEnv(requireDiscordID 
 		}
 	}
 	var err error
-	webhook := os.Getenv(game)
+	webhook := getEnv(game)
 	if webhook == "" {
 		err = fmt.Errorf("could not find webhook for game %s", game)
 	} else {
