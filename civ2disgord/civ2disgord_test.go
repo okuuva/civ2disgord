@@ -34,7 +34,7 @@ var referenceDiscordConfig = DiscordConfig {
 	},
 	Webhooks: map[string]string {
 		"RegularGaem":     "https://discordapp.com/webhook0",
-		"SupaAwesomeGaem": "https://discordapp.com/webhook1",
+		"SupaAwesome Gaem": "https://discordapp.com/webhook1",
 	},
 	DebugWebhook: "https://when-all-goes-bonkers",
 }
@@ -197,6 +197,30 @@ func TestCiv6Message_NewDefaultDiscordMessageNoDiscordIDWhileRequired(t *testing
 	_, err = referenceCivMessage.NewDefaultDiscordMessage(&noMatchingDiscordID, true)
 	if err == nil {
 		t.Errorf("Generating message without matching DiscordID while requireDiscordID = true didn't fail!")
+	}
+}
+
+func TestGetEnv(t *testing.T) {
+	loadEnv()
+	key := "SteamNick2"
+	expectedValue := "23123discordIDhere123123"
+	value := getEnv(key, false)
+	if value != expectedValue {
+		t.Errorf("Unexpected environment variable value for key %s!", key)
+		t.Errorf("Expected: %s", expectedValue)
+		t.Errorf("Received: %s", value)
+	}
+}
+
+func TestGetEnvBase64(t *testing.T) {
+	loadEnv()
+	key := "SupaAwesome Gaem"
+	expectedValue := "https://discordapp.com/webhook0"
+	value := getEnv(key, true)
+	if value != expectedValue {
+		t.Errorf("Unexpected environment variable value for key %s!", key)
+		t.Errorf("Expected: %s", expectedValue)
+		t.Errorf("Received: %s", value)
 	}
 }
 
