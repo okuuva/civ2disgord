@@ -3,6 +3,7 @@ package civ2disgord
 
 import (
 	"bytes"
+	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -12,8 +13,12 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func getEnv(key string) string {
-	return os.Getenv(fmt.Sprintf("civ2disgord_%s", key))
+func getEnv(key string, base64 bool) string {
+	key = fmt.Sprintf("civ2disgord_%s", key)
+	if base64 {
+		key = b64.RawURLEncoding.EncodeToString([]byte(key))
+	}
+	return os.Getenv(key)
 }
 
 // I really do not want to know how the actual game code looks like when the API has this kind of variable naming...
@@ -55,11 +60,11 @@ func (civMessage *Civ6Message) NewDefaultDiscordMessage(config *DiscordConfig, r
 	return discordMessage, err
 }
 
-func (civMessage *Civ6Message) NewDefaultDiscordMessageFromEnv(requireDiscordID bool) (*DiscordMessage, error) {
+func (civMessage *Civ6Message) NewDefaultDiscordMessageFromEnv(requireDiscordID, base64 bool) (*DiscordMessage, error) {
 	player := civMessage.Player()
 	game := civMessage.Game()
 	turn := civMessage.TurnNumber()
-	discordID := getEnv(player)
+	discordID := getEnv(player, base64)
 	if discordID == "" {
 		if requireDiscordID {
 			return nil, fmt.Errorf("could not find DiscordID for player %s", player)
@@ -67,8 +72,8 @@ func (civMessage *Civ6Message) NewDefaultDiscordMessageFromEnv(requireDiscordID 
 		discordID = player
 	}
 	debugWebhooks := []string{
-		getEnv("global_debug_webhook"),
-		getEnv(fmt.Sprintf("%s_debug", game)),
+		getEnv("global_debug_webhook", base64),
+		getEnv(fmt.Sprintf("%s_debug", game), base64),
 	}
 	var webhooks []string
 	for _, webhook := range debugWebhooks {
@@ -77,7 +82,7 @@ func (civMessage *Civ6Message) NewDefaultDiscordMessageFromEnv(requireDiscordID 
 		}
 	}
 	var err error
-	webhook := getEnv(game)
+	webhook := getEnv(game, base64)
 	if webhook == "" {
 		err = fmt.Errorf("could not find webhook for game %s", game)
 	} else {
