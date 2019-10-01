@@ -13,8 +13,12 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+func base64Encode(s string) string {
+	return b64.RawURLEncoding.EncodeToString([]byte(s))
+}
+
 func getEnv(key string) string {
-	key = b64.RawURLEncoding.EncodeToString([]byte(key))
+	key = base64Encode(key)
 	return os.Getenv(key)
 }
 
@@ -128,6 +132,8 @@ func NewDefaultDiscordMessage(player, game, turn string, webhooks []string) *Dis
 	return &discordMessage
 }
 
+type EnvConfig map[string]string
+
 type DiscordConfig struct {
 	Players      map[string]string	`yaml:"players"`
 	Webhooks     map[string]string	`yaml:"webhooks"`
@@ -135,7 +141,19 @@ type DiscordConfig struct {
 }
 
 func (config *DiscordConfig) DiscordID(player string) string {return config.Players[player]}
-func (config *DiscordConfig) Webhook(game string) string {return config.Webhooks[game]}
+func (config *DiscordConfig) Webhook(game string) string     {return config.Webhooks[game]}
+
+func (config *DiscordConfig) ToEnvVariables() *EnvConfig {
+	envConfig := EnvConfig{}
+	for steamNick, discordNick := range config.Players {
+		envConfig[base64Encode(steamNick)] = discordNick
+	}
+	for gameName, gameURL := range config.Webhooks {
+		envConfig[base64Encode(gameName)] = gameURL
+	}
+	envConfig[base64Encode("global_debug_webhook")] = config.DebugWebhook
+	return &envConfig
+}
 
 func ParseConfig(configFile io.Reader) (DiscordConfig, error) {
 	decoder := yaml.NewDecoder(configFile)

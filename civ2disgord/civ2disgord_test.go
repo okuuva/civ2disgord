@@ -39,6 +39,14 @@ var referenceDiscordConfig = DiscordConfig {
 	DebugWebhook: "https://when-all-goes-bonkers",
 }
 
+var referenceEnvConfig = EnvConfig{
+	"U3RlYW1OaWNrMQ": "13123discordIDhere123123",
+	"U3RlYW1OaWNrMg": "23123discordIDhere123123",
+	"UmVndWxhckdhZW0": "https://discordapp.com/webhook0",
+	"U3VwYUF3ZXNvbWUgR2FlbQ": "https://discordapp.com/webhook1",
+	"Z2xvYmFsX2RlYnVnX3dlYmhvb2s": "https://when-all-goes-bonkers",
+}
+
 func loadEnv() {
 	godotenv.Load()
 }
@@ -85,6 +93,15 @@ func TestDiscordConfig_Webhook(t *testing.T) {
 		t.Errorf("Unexpected webhook!")
 		t.Errorf("Expected: %s", expected)
 		t.Errorf("Got:      %s", webhook)
+	}
+}
+
+func TestDiscordConfig_ToEnvVariables(t *testing.T) {
+	envConfig := referenceDiscordConfig.ToEnvVariables()
+	if !cmp.Equal(envConfig, &referenceEnvConfig) {
+		t.Errorf("Error converting DiscordConfig to EnvConfig!")
+		t.Errorf("Expected: %+v", referenceEnvConfig)
+		t.Errorf("Got:      %+v", envConfig)
 	}
 }
 
