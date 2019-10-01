@@ -14,7 +14,6 @@ import (
 )
 
 func getEnv(key string) string {
-	key = fmt.Sprintf("civ2disgord_%s", key)
 	key = b64.RawURLEncoding.EncodeToString([]byte(key))
 	return os.Getenv(key)
 }
