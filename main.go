@@ -3,6 +3,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 )
 
 const (
+	// TODO: create a proper help string
 	usage = "Halp"
 )
 
@@ -37,10 +39,20 @@ func main() {
 		config, err = civ2disgord.ParseConfig(f)
 		logger.checkFatal(err, "Could not parse config file", 1)
 		logger.debug.Println("Successfully loaded config")
+		if cmdline.toEnv {
+			envConfig := config.ToEnvVariables()
+			for variable, value := range *envConfig {
+				fmt.Printf("%s=%s\n", variable, value)
+			}
+			os.Exit(0)
+		}
 	} else if cmdline.fromEnv {
 		logger.debug.Println("Reading mapping values from environment variables")
 		if err := godotenv.Load(); err != nil {
 			logger.debug.Println("Failed to load default environment variables from .env")
+		}
+		if cmdline.toEnv {
+			logger.checkFatal(errors.New("mixed messages"), "No point converting default variables", 3)
 		}
 	} else {
 		logger.checkFatal(errors.New("no config provided"), "No config provided", 3)
