@@ -13,11 +13,9 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func getEnv(key string, base64 bool) string {
+func getEnv(key string) string {
 	key = fmt.Sprintf("civ2disgord_%s", key)
-	if base64 {
-		key = b64.RawURLEncoding.EncodeToString([]byte(key))
-	}
+	key = b64.RawURLEncoding.EncodeToString([]byte(key))
 	return os.Getenv(key)
 }
 
@@ -60,11 +58,11 @@ func (civMessage *Civ6Message) NewDefaultDiscordMessage(config *DiscordConfig, r
 	return discordMessage, err
 }
 
-func (civMessage *Civ6Message) NewDefaultDiscordMessageFromEnv(requireDiscordID, base64 bool) (*DiscordMessage, error) {
+func (civMessage *Civ6Message) NewDefaultDiscordMessageFromEnv(requireDiscordID bool) (*DiscordMessage, error) {
 	player := civMessage.Player()
 	game := civMessage.Game()
 	turn := civMessage.TurnNumber()
-	discordID := getEnv(player, base64)
+	discordID := getEnv(player)
 	if discordID == "" {
 		if requireDiscordID {
 			return nil, fmt.Errorf("could not find DiscordID for player %s", player)
@@ -72,8 +70,8 @@ func (civMessage *Civ6Message) NewDefaultDiscordMessageFromEnv(requireDiscordID,
 		discordID = player
 	}
 	debugWebhooks := []string{
-		getEnv("global_debug_webhook", base64),
-		getEnv(fmt.Sprintf("%s_debug", game), base64),
+		getEnv("global_debug_webhook"),
+		getEnv(fmt.Sprintf("%s_debug", game)),
 	}
 	var webhooks []string
 	for _, webhook := range debugWebhooks {
@@ -82,7 +80,7 @@ func (civMessage *Civ6Message) NewDefaultDiscordMessageFromEnv(requireDiscordID,
 		}
 	}
 	var err error
-	webhook := getEnv(game, base64)
+	webhook := getEnv(game)
 	if webhook == "" {
 		err = fmt.Errorf("could not find webhook for game %s", game)
 	} else {

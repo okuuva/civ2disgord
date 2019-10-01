@@ -10,7 +10,7 @@ import (
 func HandleRequest(civ6Message civ2disgord.Civ6Message) error {
 	logger := newLogger(os.Stdout, os.Stdout, os.Stderr)
 	logger.debug.Printf("Received message: %+v", civ6Message)
-	discordMessage, err := civ6Message.NewDefaultDiscordMessageFromEnv(false, true)
+	discordMessage, err := civ6Message.NewDefaultDiscordMessageFromEnv(false)
 	if err != nil {
 		return err
 	}

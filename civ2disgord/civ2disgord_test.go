@@ -44,7 +44,7 @@ func loadEnv() {
 }
 
 func unsetEnv(key string) {
-	os.Unsetenv(fmt.Sprintf("civ2disgord_%s", key))
+	os.Unsetenv(key)
 }
 
 func TestParseConfig(t *testing.T) {
@@ -202,21 +202,9 @@ func TestCiv6Message_NewDefaultDiscordMessageNoDiscordIDWhileRequired(t *testing
 
 func TestGetEnv(t *testing.T) {
 	loadEnv()
-	key := "SteamNick2"
-	expectedValue := "23123discordIDhere123123"
-	value := getEnv(key, false)
-	if value != expectedValue {
-		t.Errorf("Unexpected environment variable value for key %s!", key)
-		t.Errorf("Expected: %s", expectedValue)
-		t.Errorf("Received: %s", value)
-	}
-}
-
-func TestGetEnvBase64(t *testing.T) {
-	loadEnv()
 	key := "SupaAwesome Gaem"
 	expectedValue := "https://discordapp.com/webhook0"
-	value := getEnv(key, true)
+	value := getEnv(key)
 	if value != expectedValue {
 		t.Errorf("Unexpected environment variable value for key %s!", key)
 		t.Errorf("Expected: %s", expectedValue)
@@ -226,7 +214,7 @@ func TestGetEnvBase64(t *testing.T) {
 
 func TestCiv6Message_NewDefaultDiscordMessageFromEnv(t *testing.T) {
 	loadEnv()
-	discordMessage, err := referenceCivMessage.NewDefaultDiscordMessageFromEnv(true, false)
+	discordMessage, err := referenceCivMessage.NewDefaultDiscordMessageFromEnv(true)
 	if err != nil {
 		t.Errorf("Failed to generate test Discord message")
 		t.Errorf("Error: %s", err)
@@ -241,8 +229,8 @@ func TestCiv6Message_NewDefaultDiscordMessageFromEnv(t *testing.T) {
 
 func TestCiv6Message_NewDefaultDiscordMessageFromEnvNoWebhooks(t *testing.T) {
 	loadEnv()
-	unsetEnv("RegularGaem")
-	_, err := referenceCivMessage.NewDefaultDiscordMessageFromEnv(true, false)
+	unsetEnv("Y2l2MmRpc2dvcmRfUmVndWxhckdhZW0")  // RegularGaem
+	_, err := referenceCivMessage.NewDefaultDiscordMessageFromEnv(true)
 	if err == nil {
 		t.Errorf("Generating message from DiscordConfig without webhooks didn't return an error!")
 	}
@@ -250,8 +238,8 @@ func TestCiv6Message_NewDefaultDiscordMessageFromEnvNoWebhooks(t *testing.T) {
 
 func TestCiv6Message_NewDefaultDiscordMessageFromEnvNoDiscordID(t *testing.T) {
 	loadEnv()
-	unsetEnv("SteamNick2")
-	_, err := referenceCivMessage.NewDefaultDiscordMessageFromEnv(false, false)
+	unsetEnv("Y2l2MmRpc2dvcmRfU3RlYW1OaWNrMg")
+	_, err := referenceCivMessage.NewDefaultDiscordMessageFromEnv(false)
 	if err != nil {
 		t.Errorf("Generating message without matching DiscordID while requireDiscordID = false failed!")
 	}
@@ -259,8 +247,8 @@ func TestCiv6Message_NewDefaultDiscordMessageFromEnvNoDiscordID(t *testing.T) {
 
 func TestCiv6Message_NewDefaultDiscordMessageFromEnvNoDiscordIDWhileRequired(t *testing.T) {
 	loadEnv()
-	unsetEnv("SteamNick2")
-	_, err := referenceCivMessage.NewDefaultDiscordMessageFromEnv(true, false)
+	unsetEnv("Y2l2MmRpc2dvcmRfU3RlYW1OaWNrMg")
+	_, err := referenceCivMessage.NewDefaultDiscordMessageFromEnv(true)
 	if err == nil {
 		t.Errorf("Generating message without matching DiscordID while requireDiscordID = true didn't fail!")
 	}

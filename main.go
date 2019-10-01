@@ -55,7 +55,7 @@ func main() {
 		logger.checkFatal(err, "Failed to parse message", 4)
 		var discordMessage *civ2disgord.DiscordMessage
 		if cmdline.fromEnv {
-			discordMessage, err = civMessage.NewDefaultDiscordMessageFromEnv(false, true)
+			discordMessage, err = civMessage.NewDefaultDiscordMessageFromEnv(false)
 		} else {
 			discordMessage, err = civMessage.NewDefaultDiscordMessage(&config, false)
 		}
