@@ -203,7 +203,7 @@ func TestCiv6Message_NewDefaultDiscordMessageNoDiscordIDWhileRequired(t *testing
 func TestGetEnv(t *testing.T) {
 	loadEnv()
 	key := "SupaAwesome Gaem"
-	expectedValue := "https://discordapp.com/webhook0"
+	expectedValue := "https://discordapp.com/webhook1"
 	value := getEnv(key)
 	if value != expectedValue {
 		t.Errorf("Unexpected environment variable value for key %s!", key)
